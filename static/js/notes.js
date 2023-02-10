@@ -5,6 +5,7 @@ export class Notes {
     this.allNoteLists = document.querySelectorAll(".note-list");
     this.allNotes = document.querySelectorAll(".note-card");
     this.activateAllCreateForms();
+    this.activateAllControls();
   }
 
   activateAllCreateForms() {
@@ -12,6 +13,12 @@ export class Notes {
       const personCard = noteList.closest(".person-card");
       const personID = personCard.getAttribute("data-person-id");
       new NoteCreateForm(noteList, personID);
+    });
+  }
+
+  activateAllControls() {
+    this.allNotes.forEach((noteCard) => {
+      new NoteControl(noteCard);
     });
   }
 }
@@ -51,5 +58,75 @@ export class NoteCreateForm {
     newNoteCard.querySelector(".note-content").textContent = data.content;
     newNoteCard.setAttribute("data-note-id", data.id);
     noteList.insertBefore(newNoteCard, noteList.children[1]);
+    new NoteControl(newNoteCard);
+  }
+}
+
+class NoteControl {
+  constructor(noteCard) {
+    this.noteCard = noteCard;
+    this.noteElement = this.noteCard.querySelector(".note-content");
+    this.noteControl = this.noteCard.querySelector(".note-control");
+    this.noteID = this.noteCard.getAttribute("data-note-id");
+    this.form = this.noteCard.querySelector("form");
+
+    this.editBtn = this.noteCard.querySelector(".toggle-control");
+    this.editBtn.addEventListener("click", this.handleEditClick.bind(this));
+    this.cancelBtn = this.noteCard.querySelector("[data-action='cancel']");
+    this.cancelBtn.addEventListener('click', this.handleCancelClick.bind(this));
+    this.deleteBtn = this.noteCard.querySelector("[data-action='delete']");
+    this.deleteBtn.addEventListener('click', this.handleDeleteClick.bind(this));
+    this.updateBtn = this.noteCard.querySelector("[data-action='update']");
+    this.updateBtn.addEventListener("click", this.handleUpdateClick.bind(this));
+
+    this.fillControlForm();
+  }
+
+  handleEditClick(event) {
+    event.preventDefault();
+    this.noteCard.querySelector(".note-control-card").classList.add("editing");
+    this.noteElement.classList.add("hidden");
+    this.editBtn.classList.add("hidden");
+    this.noteControl.classList.remove("hidden");
+  }
+
+  handleCancelClick(event) {
+    event.preventDefault();
+    this.noteCard.querySelector(".note-control-card").classList.remove("editing");
+    this.noteElement.classList.remove("hidden");
+    this.editBtn.classList.remove("hidden");
+    this.noteControl.classList.add("hidden");
+  }
+
+  handleDeleteClick(event) {
+    event.preventDefault();
+    const endpoint = "/api/notes/" + this.noteID;
+    sendForm(this.form, "DELETE", endpoint, (data, inputForm) => {
+      let noteCard = inputForm.closest(".note-card");
+      if(window.confirm("Do you really want to delete this note?")){
+        noteCard.remove();
+      }
+    });
+  }
+
+  handleUpdateClick(event) {
+    event.preventDefault();
+    const endpoint = "/api/notes/" + this.noteID;
+    sendForm(this.form, "PUT", endpoint, this.updateNoteInList);
+    this.cancelBtn.click();
+  }
+
+  updateNoteInList(rawData, inputForm) {
+    const data = JSON.parse(rawData);
+    const noteCard = inputForm.closest(".note-card");
+
+    const noteContent = noteCard.querySelector(".note-content");
+    noteContent.textContent = data.content;
+  }
+
+  fillControlForm() {
+    const noteContent = this.noteElement.textContent;
+    this.form.querySelector("[name='id']").setAttribute("value", this.noteID);
+    this.form.querySelector("[name='content']").setAttribute("value", noteContent)
   }
 }

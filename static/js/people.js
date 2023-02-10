@@ -53,9 +53,7 @@ class CreatePersonForm {
     personCard.setAttribute("data-person-id", data.id);
     new PersonControl(personCard);
     new NoteCreateForm(personCard.querySelector(".note-list"), data.id);
-    personCard
-      .querySelectorAll(".note-card")
-      .forEach((noteCard) => noteCard.remove());
+    personCard.querySelectorAll(".note-card").forEach((noteCard) => noteCard.remove());
     document.querySelector(".people-list").appendChild(personCard);
   }
 }
