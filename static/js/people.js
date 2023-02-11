@@ -60,6 +60,7 @@ class CreatePersonForm {
 
 class PersonControl {
   constructor(personCard) {
+    // console.log(personCard)
     this.personCard = personCard;
     this.personElement = this.personCard.querySelector(".person-content");
     this.personControl = this.personCard.querySelector(".person-control");

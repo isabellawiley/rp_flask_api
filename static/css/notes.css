@@ -31,3 +31,24 @@
 .note-content {
     padding: 0.3em 0;
 }
+
+/* Dropdown Arrow */
+
+.arrow i {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+
+.arrow i:hover {
+    cursor: pointer;
+}
+
+.up i {
+    transform: rotate(-135deg);
+}
+
+.down i {
+    transform: rotate(45deg);
+}

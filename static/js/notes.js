@@ -4,8 +4,10 @@ export class Notes {
   constructor() {
     this.allNoteLists = document.querySelectorAll(".note-list");
     this.allNotes = document.querySelectorAll(".note-card");
+    this.allNotesContainers = document.querySelectorAll(".notes-container");
     this.activateAllCreateForms();
     this.activateAllControls();
+    this.activateAllDropdowns();
   }
 
   activateAllCreateForms() {
@@ -20,6 +22,12 @@ export class Notes {
     this.allNotes.forEach((noteCard) => {
       new NoteControl(noteCard);
     });
+  }
+
+  activateAllDropdowns() {
+    this.allNotesContainers.forEach((noteContainer) => {
+      new NoteDropdown(noteContainer);
+    })
   }
 }
 
@@ -128,5 +136,31 @@ class NoteControl {
     const noteContent = this.noteElement.textContent;
     this.form.querySelector("[name='id']").setAttribute("value", this.noteID);
     this.form.querySelector("[name='content']").setAttribute("value", noteContent)
+  }
+}
+
+class NoteDropdown {
+  constructor(noteContainer) {
+    this.noteContainer = noteContainer;
+    this.noteList = this.noteContainer.querySelector(".note-list");
+
+    this.arrow = this.noteContainer.querySelector(".arrow");
+    this.arrow.addEventListener("click", this.handleDropdownClick.bind(this));
+  }
+
+  handleDropdownClick(event) {
+    event.preventDefault();
+    let arrowDown = this.arrow.classList.contains("down");
+
+    if(arrowDown) {
+      this.arrow.classList.remove("down");
+      this.arrow.classList.add("up");
+      this.noteList.classList.remove('hidden');
+    }
+    else {
+      this.arrow.classList.remove("up");
+      this.arrow.classList.add("down");
+      this.noteList.classList.add("hidden");
+    }
   }
 }
